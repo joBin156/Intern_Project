@@ -3,6 +3,7 @@ import { Observable } from 'rxjs';
 import { TabService } from 'src/service/tab.service';
 import { TimeInOutModalService } from 'src/service/time-in-out-modal.service';
 import { TimeInOutService } from 'src/service/time-in-out.service';
+
 @Component({
   selector: 'app-timeinout',
   templateUrl: './timeinout.component.html',
@@ -23,6 +24,9 @@ export class TimeinoutComponent implements OnInit {
   Id = localStorage.getItem('id');
 
   check_time_out: boolean = false;
+
+  lateMessage: string = ''; // Add late message property
+  overtimeMessage: string = ''; // Add overtime message property
 
   constructor(
     private tabService: TabService,
@@ -69,7 +73,6 @@ export class TimeinoutComponent implements OnInit {
 
   ngOnInit(): void {
     this.timeInOutModalService.closeModal();
-
     this.isTimeIn();
     this.isTimeOut();
   }
@@ -115,10 +118,17 @@ export class TimeinoutComponent implements OnInit {
     this.setTimeIn(this.timeDisplay);
     this.timeInDate = this.currentDate;
 
-    //remove//let timeInDateTime = new Date(`${this.timeInDate} ` + this.getTimeIn());
+    let timeInDateTime = new Date(`${this.timeInDate} ${this.getTimeIn()}`);
 
-    let timeInDateTime = new Date(`${this.timeInDate} ${this.getTimeIn()}`);//added
-    
+    let timeInHour = timeInDateTime.getHours();
+    let timeInMinute = timeInDateTime.getMinutes();
+
+    if (timeInHour > 7 || (timeInHour === 7 && timeInMinute > 0)) {
+      this.lateMessage = 'You are late for time-in.'; // Set late message
+    } else {
+      this.lateMessage = ''; // Clear late message
+    }
+
     if (this.Id) {
       this.timeInOutService.timeIn(this.Id, timeInDateTime).subscribe(
         (res) => {
@@ -138,11 +148,18 @@ export class TimeinoutComponent implements OnInit {
     this.setTimeOut(this.timeDisplay);
     this.timeOutDate = this.currentDate;
 
-    //remove//let timeOutDateTime = new Date(`${this.timeOutDate} ` + this.getTimeOut());
-    let timeOutDateTime = new Date(`${this.timeOutDate} ${this.getTimeOut()}`);//added
+    let timeOutDateTime = new Date(`${this.timeOutDate} ${this.getTimeOut()}`);
+
+    let timeOutHour = timeOutDateTime.getHours();
+    let timeOutMinute = timeOutDateTime.getMinutes();
+
+    if (timeOutHour > 18 || (timeOutHour === 18 && timeOutMinute > 0)) {
+      this.overtimeMessage = 'You are working overtime.'; // Set overtime message
+    } else {
+      this.overtimeMessage = ''; // Clear overtime message
+    }
 
     if (this.getTimeIn() !== '--') {
-
       this.timeInOutService
         .timeOut(this.timeOutId.toString(), timeOutDateTime)
         .subscribe(
@@ -159,8 +176,7 @@ export class TimeinoutComponent implements OnInit {
           this.timeInOutService
             .setTotalTime(this.timeOutId, res.total_time)
             .subscribe(
-              (res_total_time) => {
-              },
+              (res_total_time) => {},
               (err) => {
                 console.log(err);
               },

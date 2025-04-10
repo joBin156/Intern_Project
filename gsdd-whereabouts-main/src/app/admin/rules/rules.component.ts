@@ -9,7 +9,7 @@ import { Time } from 'src/domain/admin-rules';
 export class RulesComponent implements OnInit {
   timeRule!: Time[];
 
-  selectedTimeRule!: Time[];
+  selectedTimeRule!: Time;
 
   pauseTracking = [
     { label: 'True', value: true },
@@ -24,5 +24,10 @@ export class RulesComponent implements OnInit {
       { time: '8:00 AM-5:00 PM' },
       { time: '9:00 AM-6:00 PM' },
     ];
+  }
+
+  confirm() {
+    console.log('Selected Time:', this.selectedTimeRule);
+    console.log('Pause Tracking:', this.selectedPauseTracking);
   }
 }
