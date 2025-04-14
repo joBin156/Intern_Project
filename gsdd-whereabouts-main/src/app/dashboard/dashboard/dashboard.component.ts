@@ -93,8 +93,8 @@ export class DashboardComponent implements OnInit {
 
     console.log('ID---' + localStorage.getItem('id')?.toString());
 
-    this.employeeAttendanceService.getEmployeeAttendanceData().subscribe((data) => {
-      const stats = this.getWeeklyAttendanceStats(data);
+    this.employeeAttendanceService.getEmployeeAttendanceData().subscribe((userId) => {
+      const stats = this.getWeeklyAttendanceStats(userId);
 
       // Update the chart data with the attendance stats for the employee
 
