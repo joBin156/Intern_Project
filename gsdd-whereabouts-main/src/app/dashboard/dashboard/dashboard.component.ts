@@ -30,9 +30,8 @@ export class DashboardComponent implements OnInit {
       this.getTotalTimeToday();
       this.getFrequentStatus();
       this.getLongestStreak();
-      this.setChartData();
-      this.setChartOptions();
     }
+    
   }
 
   // Fetch total time today
@@ -90,12 +89,12 @@ export class DashboardComponent implements OnInit {
   }
 
   // Set chart data
-  setChartData() {
+  setChartData() {      console.log('ID---' + localStorage.getItem('id')?.toString());
     this.employeeAttendanceService.getEmployeeAttendanceData().subscribe((data) => {
       const stats = this.getWeeklyAttendanceStats(data);
 
       // Update the chart data with the attendance stats for the employee
-      console.log('ID---' + localStorage.getItem('id')?.toString());
+
       this.basicData = {
         labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
         datasets: [
