@@ -14,7 +14,7 @@ export class DashboardComponent implements OnInit {
   frequentStatus: string = 'Not configured';
   longestStreak: string = 'Not configured';
   userId: string = ''; // localStorage.  ; //'2'; // Assign a proper value
-
+  
   basicData: any;
   basicOptions: any;
 
@@ -30,8 +30,8 @@ export class DashboardComponent implements OnInit {
       this.getTotalTimeToday();
       this.getFrequentStatus();
       this.getLongestStreak();
+      this.setChartData();
     }
-    
   }
 
   // Fetch total time today
@@ -89,7 +89,10 @@ export class DashboardComponent implements OnInit {
   }
 
   // Set chart data
-  setChartData() {      console.log('ID---' + localStorage.getItem('id')?.toString());
+  setChartData() {    
+
+    console.log('ID---' + localStorage.getItem('id')?.toString());
+
     this.employeeAttendanceService.getEmployeeAttendanceData().subscribe((data) => {
       const stats = this.getWeeklyAttendanceStats(data);
 
