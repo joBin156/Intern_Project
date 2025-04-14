@@ -9,49 +9,39 @@ import * as XLSX from 'xlsx'; // To generate Excel files
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
 })
-
-
-
 export class DashboardComponent implements OnInit {
   totalTimeToday: string = 'Not configured';
   frequentStatus: string = 'Not configured';
   longestStreak: string = 'Not configured';
-  userId: string =''; // localStorage.  ; //'2'; // Assign a proper value
-  
+  userId: string = ''; // localStorage.  ; //'2'; // Assign a proper value
 
   basicData: any;
-  basicOptions: any;  
-  
+  basicOptions: any;
+
   constructor(
-  
     private timeInOutService: TimeInOutService,
     private employeeAttendanceService: EmployeeAttendanceService
-
   ) {}
-  
+
   ngOnInit(): void {
     const storedId = localStorage.getItem('id');
     if (storedId) {
-     this.userId = storedId;
-     this.getTotalTimeToday();
-     this.getFrequentStatus();
-     this.getLongestStreak();
-     this.setChartData();
-     this.setChartOptions();
+      this.userId = storedId;
+      this.getTotalTimeToday();
+      this.getFrequentStatus();
+      this.getLongestStreak();
+      this.setChartData();
+      this.setChartOptions();
     }
   }
-  
+
   // Fetch total time today
   getTotalTimeToday() {
-
-    
-
-   console.log('ID---' + localStorage.getItem('id')?.toString());
-    
+    console.log('ID---' + localStorage.getItem('id')?.toString());
 
     this.timeInOutService.getTotalTimeForToday(this.userId).subscribe(
       (res) => {
-        this.totalTimeToday = res.total_time; // Adjust based on API response
+        this.totalTimeToday = res.total_time;
       },
       (err) => {
         console.error('Error fetching total time:', err);
@@ -68,9 +58,10 @@ export class DashboardComponent implements OnInit {
   // Fetch longest streak
   getLongestStreak() {
     // Example logic (replace with real API call if needed)
-    this.longestStreak = "5 days"; // Set the actual value
+    this.longestStreak = '5 days'; // Set the actual value
   }
 
+  // Get weekly attendance stats (Monday to Friday)
   getWeeklyAttendanceStats(attendance: EmployeeAttendance[]) {
     const stats = {
       Monday: { present: 0, absent: 0 },
@@ -79,13 +70,13 @@ export class DashboardComponent implements OnInit {
       Thursday: { present: 0, absent: 0 },
       Friday: { present: 0, absent: 0 },
     };
-  
+
     attendance.forEach((record) => {
       if (!record.time_in) return;
-  
+
       const date = new Date(record.time_in);
       const weekday = date.toLocaleDateString('en-US', { weekday: 'long' });
-  
+
       if (stats[weekday as keyof typeof stats]) {
         if (record.time_out) {
           stats[weekday as keyof typeof stats].present++;
@@ -94,7 +85,7 @@ export class DashboardComponent implements OnInit {
         }
       }
     });
-  
+
     return stats;
   }
 
@@ -102,7 +93,9 @@ export class DashboardComponent implements OnInit {
   setChartData() {
     this.employeeAttendanceService.getEmployeeAttendanceData().subscribe((data) => {
       const stats = this.getWeeklyAttendanceStats(data);
-  
+
+      // Update the chart data with the attendance stats for the employee
+      console.log('ID---' + localStorage.getItem('id')?.toString());
       this.basicData = {
         labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
         datasets: [
@@ -143,7 +136,7 @@ export class DashboardComponent implements OnInit {
         },
         title: {
           display: true,
-          text: 'Attendance Chart',
+          text: 'Employee Attendance Chart',
           fontSize: 16,
         },
       },
@@ -164,3 +157,4 @@ export class DashboardComponent implements OnInit {
     XLSX.writeFile(wb, 'Timesheet.xlsx');
   }
 }
+  
