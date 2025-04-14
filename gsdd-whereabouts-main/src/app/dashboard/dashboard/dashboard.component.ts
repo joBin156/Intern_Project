@@ -25,6 +25,7 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
     const storedId = localStorage.getItem('id');
+    console.log('User ID from localStorage:', storedId);
     if (storedId) {
       this.userId = storedId;
       this.getTotalTimeToday();
@@ -63,8 +64,9 @@ export class DashboardComponent implements OnInit {
     attendance: EmployeeAttendance[],
     userId: string
   ): EmployeeAttendance[] {
-    return attendance.filter((record) => record.Id === userId);
+    return attendance.filter((record) => record.Id === userId); // Assuming `id` is the user identifier
   }
+  
 
   // Get weekly attendance stats (Monday to Friday)
   getWeeklyAttendanceStats(attendance: EmployeeAttendance[]) {

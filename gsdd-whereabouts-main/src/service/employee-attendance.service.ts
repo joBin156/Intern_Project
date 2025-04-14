@@ -7,7 +7,7 @@ import { EmployeeAttendance } from '../domain/employee-attendance';
   providedIn: 'root',
 })
 export class EmployeeAttendanceService {
-  private apiUrl = 'https://example.com/api/attendance'; // Update with your API URL
+  private apiUrl = 'localhost:80/'; // Update with your API URL
 
   constructor(private http: HttpClient) {}
 
