@@ -13,10 +13,10 @@ export class DashboardComponent implements OnInit {
   totalTimeToday: string = 'Not configured';
   frequentStatus: string = 'Not configured';
   longestStreak: string = 'Not configured';
-  userId: string = ''; // localStorage.  ; //'2'; // Assign a proper value
-  
-  basicData: any;
-  basicOptions: any;
+  userId: string = ''; // User ID from localStorage
+
+  basicData: any; // Chart data
+  basicOptions: any; // Chart options
 
   constructor(
     private timeInOutService: TimeInOutService,
@@ -31,13 +31,13 @@ export class DashboardComponent implements OnInit {
       this.getFrequentStatus();
       this.getLongestStreak();
       this.setChartData();
+    } else {
+      console.error('User ID not found in localStorage');
     }
   }
 
   // Fetch total time today
-  getTotalTimeToday() {
-    console.log('ID---' + localStorage.getItem('id')?.toString());
-
+  getTotalTimeToday(): void {
     this.timeInOutService.getTotalTimeForToday(this.userId).subscribe(
       (res) => {
         this.totalTimeToday = res.total_time;
@@ -48,16 +48,22 @@ export class DashboardComponent implements OnInit {
     );
   }
 
-  // Fetch frequent status
-  getFrequentStatus() {
-    // Example logic (replace with real API call if needed)
-    this.frequentStatus = 'On Time'; // Set the actual value
+  // Fetch frequent status (static for now, update API logic if needed)
+  getFrequentStatus(): void {
+    this.frequentStatus = 'On Time'; // Replace with API logic if necessary
   }
 
-  // Fetch longest streak
-  getLongestStreak() {
-    // Example logic (replace with real API call if needed)
-    this.longestStreak = '5 days'; // Set the actual value
+  // Fetch longest streak (static for now, update API logic if needed)
+  getLongestStreak(): void {
+    this.longestStreak = '5 days'; // Replace with API logic if necessary
+  }
+
+  // Filter attendance data for the logged-in user
+  filterAttendanceForUser(
+    attendance: EmployeeAttendance[],
+    userId: string
+  ): EmployeeAttendance[] {
+    return attendance.filter((record) => record.Id === userId);
   }
 
   // Get weekly attendance stats (Monday to Friday)
@@ -89,47 +95,52 @@ export class DashboardComponent implements OnInit {
   }
 
   // Set chart data
-  setChartData() {    
+  setChartData(): void {
+    this.employeeAttendanceService.getEmployeeAttendanceData().subscribe(
+      (data) => {
+        const filteredData = this.filterAttendanceForUser(data, this.userId);
+        const stats = this.getWeeklyAttendanceStats(filteredData);
 
-    console.log('ID---' + localStorage.getItem('id')?.toString());
+        // Update the chart data
+        this.basicData = {
+          labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+          datasets: [
+            {
+              label: 'Present',
+              backgroundColor: '#42A5F5',
+              data: [
+                stats.Monday.present,
+                stats.Tuesday.present,
+                stats.Wednesday.present,
+                stats.Thursday.present,
+                stats.Friday.present,
+              ],
+            },
+            {
+              label: 'Absent',
+              backgroundColor: '#9CCC65',
+              data: [
+                stats.Monday.absent,
+                stats.Tuesday.absent,
+                stats.Wednesday.absent,
+                stats.Thursday.absent,
+                stats.Friday.absent,
+              ],
+            },
+          ],
+        };
 
-    this.employeeAttendanceService.getEmployeeAttendanceData().subscribe((data) => {
-      const stats = this.getWeeklyAttendanceStats(data);
-
-      // Update the chart data with the attendance stats for the employee
-
-      this.basicData = {
-        labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-        datasets: [
-          {
-            label: 'Present',
-            backgroundColor: '#42A5F5',
-            data: [
-              stats.Monday.present,
-              stats.Tuesday.present,
-              stats.Wednesday.present,
-              stats.Thursday.present,
-              stats.Friday.present,
-            ],
-          },
-          {
-            label: 'Absent',
-            backgroundColor: '#9CCC65',
-            data: [
-              stats.Monday.absent,
-              stats.Tuesday.absent,
-              stats.Wednesday.absent,
-              stats.Thursday.absent,
-              stats.Friday.absent,
-            ],
-          },
-        ],
-      };
-    });
+        // Set chart options
+        this.setChartOptions();
+      },
+      (err) => {
+        console.error('Error fetching attendance data:', err);
+      }
+    );
   }
 
   // Set chart options
-  setChartOptions() {
+  setChartOptions(): void {
     this.basicOptions = {
       responsive: true,
       plugins: {
@@ -146,17 +157,14 @@ export class DashboardComponent implements OnInit {
   }
 
   // Generate Excel Timesheet
-  generateExcelTimesheet() {
-    const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet([
-      {
-        TotalTimeToday: this.totalTimeToday,
-        FrequentStatus: this.frequentStatus,
-        LongestStreak: this.longestStreak,
-      },
-    ]);
+  generateExcelTimesheet(): void {
+    const ws: XLSX.WorkSheet = XLSX.utils.json_to_sheet([{
+      TotalTimeToday: this.totalTimeToday,
+      FrequentStatus: this.frequentStatus,
+      LongestStreak: this.longestStreak,
+    }]);
     const wb: XLSX.WorkBook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Timesheet');
     XLSX.writeFile(wb, 'Timesheet.xlsx');
   }
 }
-  
