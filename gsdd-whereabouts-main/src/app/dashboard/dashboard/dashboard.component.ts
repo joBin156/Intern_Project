@@ -25,7 +25,6 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
     const storedId = localStorage.getItem('id');
-    console.log('User ID from localStorage:', storedId);
     if (storedId) {
       this.userId = storedId;
       this.getTotalTimeToday();
@@ -98,8 +97,10 @@ export class DashboardComponent implements OnInit {
 
   // Set chart data
   setChartData(): void {
+    
     this.employeeAttendanceService.getEmployeeAttendanceData().subscribe(
       (data) => {
+
         const filteredData = this.filterAttendanceForUser(data, this.userId);
         const stats = this.getWeeklyAttendanceStats(filteredData);
 
