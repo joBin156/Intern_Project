@@ -1,0 +1,49 @@
+<div class="">
+  <p-toast class="text-xs"></p-toast>
+  <div class="">
+<form
+class=""
+(ngSubmit)="login()"
+>
+<main class="main-login">
+  <div class="left-login">
+      <h1>Namria<br>GSDD Personnel Tracking System</h1>
+  </div>
+
+  <div class="right-login">
+      <div class="card-login">
+          <h1>Login</h1>
+          <div class="textfield">
+              <label for="email">Email</label>
+              <input
+              type="email"
+              id="email"
+              class=""
+              placeholder="Email"
+              [formControl]="emailControl"
+              required
+            />
+          </div>
+
+          <div class="textfield">
+              <label for="pin">Pin</label>
+              <input
+              pInputText
+              pKeyFilter="int"
+              maxlength="6"
+              type="password"
+              id="pin"
+              class=""
+              placeholder="Enter 6-digit pin"
+              [formControl]="pinControl"
+              required
+            />
+          </div>
+
+          <button 
+          type="submit"
+          class="btn-login">Login</button>
+      </div>
+  </div>
+</main>
+</form>

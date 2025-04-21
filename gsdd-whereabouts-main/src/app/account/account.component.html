@@ -17,18 +17,19 @@
               >
                 <span
                   class="text-xs font-medium text-gray-600 dark:text-gray-300 sm:text-base lg:text-3xl"
-                >PF</span
                 >
+                  {{ User.first_name[0] }}{{ User.last_name[0] }}
+                </span>
               </div>
             </div>
             <div class="flex items-center">
               <button
-              data-modal-target="change-picture-modal"
-              data-modal-toggle="change-picture-modal"
-              class="rounded-lg text-center text-xs font-medium text-blue-400 hover:text-blue-500"
-              type="button"
+                data-modal-target="change-picture-modal"
+                data-modal-toggle="change-picture-modal"
+                class="rounded-lg text-center text-xs font-medium text-blue-400 hover:text-blue-500"
+                type="button"
               >
-                Edit profile image (NOT CONFIGURED)
+                Edit profile image
               </button>
             </div>
           </div>
@@ -102,13 +103,14 @@
       <div class="space-y-4 p-4 md:p-5">
         <label
           class="mb-2 block text-sm font-medium text-gray-900 dark:text-white"
-          for="small_size"
+          for="fileInput"
           >Accepted formats: .jpg, .png, .webp</label
         >
         <input
           class="mb-5 block w-full cursor-pointer rounded-lg border border-gray-300 bg-gray-50 text-xs text-gray-900 focus:outline-none dark:border-gray-600 dark:bg-gray-700 dark:text-gray-400 dark:placeholder-gray-400"
-          id="small_size"
+          id="fileInput"
           type="file"
+          (change)="onFileChange($event)"
         />
       </div>
       <!-- Modal footer -->
@@ -119,6 +121,7 @@
           data-modal-hide="change-picture-modal"
           type="button"
           class="rounded-lg bg-blue-700 px-5 py-2.5 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          (click)="saveProfileImage()"
         >
           Save
         </button>
