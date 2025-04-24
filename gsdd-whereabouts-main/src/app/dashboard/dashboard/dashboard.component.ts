@@ -100,8 +100,8 @@ export class DashboardComponent implements OnInit {
 
   // Set chart data
   setChartData() {
-    this.employeeAttendanceService.getEmployeeAttendanceData().subscribe((data) => {
-      const stats = this.getWeeklyAttendanceStats(data);
+    this.employeeAttendanceService.getEmployeeAttendanceData().subscribe((id) => {
+      const stats = this.getWeeklyAttendanceStats(id);
   
       this.basicData = {
         labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],

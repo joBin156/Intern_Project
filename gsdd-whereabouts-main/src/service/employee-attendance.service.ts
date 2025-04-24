@@ -7,9 +7,9 @@ import { HttpClient } from '@angular/common/http';
 @Injectable()
 export class EmployeeAttendanceService {
     private baseUrlAPI = `${environment.apiUrl}`;
+    private baseUrl = 'http://localhost:80'
 
     constructor(private http: HttpClient) { }
-    
     // Hard code data
     // getEmployeeAttendanceData() {
     //     return [
@@ -206,4 +206,14 @@ export class EmployeeAttendanceService {
     getEmployeeAttendance() {
         return Promise.resolve(this.getEmployeeAttendanceData());
     }
+
+    updateRules(rules: { selectedTimeRule: string; selectedPauseTracking: boolean }): Observable<any> {
+        const url = `${this.baseUrlAPI}/admin_rules`; // Replace with the actual endpoint
+        return this.http.post(url, rules);
+      }
+
+      markAbsent(employeeId: string, date: string): Observable<any> {
+        const url = `${this.baseUrlAPI}attendance/mark-absent`; // Replace with actual endpoint
+        return this.http.post(url, { employeeId, date });
+      }
 }

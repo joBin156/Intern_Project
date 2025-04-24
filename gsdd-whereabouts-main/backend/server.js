@@ -41,8 +41,21 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(cookieParser());
 app.use(bodyParser.json());
+app.use(express.json());
 
 // app.use(history());
+
+// WebSocket setup
+wss.on("error", console.error);
+wss.on("connection", function connection(ws) {
+  console.log("A new client connected");
+  ws.send("WS SEND Welcome new client!");
+
+  ws.on("message", function message(status) {
+    console.log("Received: %s", status);
+    ws.send("Got your message from WS: " + status);
+  });
+});
 
 // Remove timezone at the end of the creationAt and updateAt
 Sequelize.DATE.prototype._stringify = function (date, options) {
@@ -101,11 +114,50 @@ app.use("/", status_value_route);
 
 app.use('/', express.static(path.join(__dirname, 'dist/gsdd-whereabouts')));
 
-app.get('*', (req, res) =>{
-    res.sendFile(path.join(__dirname,
-      'dist/gsdd-whereabouts/index.html'));
+app.get("/admin_rules", (req, res) => {
+  const data = {
+      selectedTimeRule: "7:00 AM-6:00 PM",
+      selectedPauseTracking: true,
+  };
+  res.status(200).json(data);
 });
 
+//added for the rules
+app.post("/admin_rules", (req, res) => {
+  const { selectedTimeRule, selectedPauseTracking } = req.body;
+
+  if (!selectedTimeRule || selectedPauseTracking === undefined) {
+      return res.status(400).send({ message: "Invalid request body" });
+  }
+
+  // Example: You can process or save these rules to the database
+  console.log("Admin Rules Updated:", req.body);
+
+  res.status(200).send({ message: "Admin rules updated successfully!" });
+});
+
+app.get('/allowed-time', (req, res) => {
+  res.json({ time: '7:00 AM-6:00 PM' });
+});
+
+app.post('/allowed-time', (req, res) => {
+  const { time, pauseTracking } = req.body;
+  console.log('Received payload:', req.body);
+  if (!time || pauseTracking === undefined) {
+      return res.status(400).json({ error: 'Missing required fields' });
+  }
+  res.json({ success: true, message: 'Time rule configured successfully' });
+});
+
+// Static file serving
+app.use("/", express.static(path.join(__dirname, "dist/gsdd-whereabouts")));
+
+// Catch-all route for SPA
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "dist/gsdd-whereabouts/index.html"));
+});
+
+// Server startup
 server.listen(port, () => {
-  console.log(`Listening on ${port}`);
+  console.log(`Server running on http://localhost:${port}`);
 });
