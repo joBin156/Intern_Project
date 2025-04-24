@@ -53,7 +53,7 @@ export class RulesComponent implements OnInit {
     this.timeRule = [
       { time: '7:00 AM-6:00 PM' },
       { time: '8:00 AM-5:00 PM' },
-      { time: '9:00 AM-6:00 PM' },
+      { time: '5:00 pM-6:00 PM' },
     ];
 
     this.http.get('http://localhost:80/allowed-time').subscribe({

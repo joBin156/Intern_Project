@@ -67,7 +67,7 @@ export class TimeinoutComponent implements OnInit {
       }
     }, 1000);
   }
-
+  
   isOpen$ = this.timeInOutModalService.isOpen$;
 
   ngOnInit(): void {
@@ -113,74 +113,54 @@ export class TimeinoutComponent implements OnInit {
 
   timeOutId = '';
 
+  // Inside TimeinoutComponent
+
+  /** Clock the user in */
   timeIn(): void {
     const payload = {
-      time: new Date().toISOString(),
+      userId: this.Id,           // make sure this matches your backend’s field
+      timeIn: this.timeDisplay,  // e.g. “08:30:00”
     };
-  
-    this.http.post('http://localhost/employee-timein', payload).subscribe({
+
+    console.log('Time-in payload:', payload);
+
+    this.http.post('http://localhost:80/employee-timein', payload).subscribe({
       next: (response: any) => {
-        console.log('Success:', response);
+        console.log('Time-in successful:', response);
         alert(response.message || 'Time-in successful');
+        this.setTimeIn(this.timeDisplay);
+        this.check_time_out = false;
       },
       error: (err) => {
-        console.error('API Error:', err);
-        alert(err.error.message || 'Failed to time in.');
-      },
+        console.error('API Error:', err, err.error);
+        alert(err.error?.message || 'Failed to time in.');
+      }
     });
   }
-  
-  timeOut() {
-    // Close the modal and update time-out display
-    this.timeInOutModalService.closeModal();
-    this.setTimeOut(this.timeDisplay);
-  
-    // Assign current date for time-out
-    this.timeOutDate = this.currentDate;
-  
-    // Construct the time-out datetime object
-    const timeOutValue = this.getTimeOut();
-    if (!this.timeOutDate || !timeOutValue || timeOutValue === '--') {
-      console.error('Invalid timeOutDate or timeOut value.');
-      alert('Unable to log time out. Ensure time-in is recorded.');
-      return;
-    }
-  
-    const timeOutDateTime = new Date(`${this.timeOutDate} ${timeOutValue}`);
-  
-    // Check if time-in is valid
-    if (this.getTimeIn() === '--') {
-      console.error('User must clock in before clocking out.');
-      alert('Please clock in first.');
-      return;
-    }
-  
-    // Call time-out service
-    this.timeInOutService.timeOut(this.timeOutId.toString(), timeOutDateTime).subscribe({
-      next: () => {
+
+  /** Clock the user out */
+  timeOut(): void {
+    const payload = {
+      userId: this.Id,
+      timeOut: this.timeDisplay,
+    };
+
+    console.log('Time-out payload:', payload);
+
+    this.http.post('http://localhost:80/employee-timeout', payload).subscribe({
+      next: (response: any) => {
+        console.log('Time-out successful:', response);
+        alert(response.message || 'Time-out successful');
+        this.setTimeOut(this.timeDisplay);
         this.check_time_out = true;
-        console.log('Time-out marked successfully.');
+        // then fetch & update total time as before...
       },
       error: (err) => {
-        console.error('Error during time-out:', err);
-        alert('Failed to log time out.');
-      }
-    });
-  
-    // Fetch and update total time for the day
-    this.timeInOutService.getTotalTimeForToday(this.timeOutId).subscribe({
-      next: (res) => {
-        this.timeInOutService.setTotalTime(this.timeOutId, res.total_time).subscribe({
-          next: () => console.log('Total time updated successfully.'),
-          error: (err) => console.error('Error setting total time:', err),
-        });
-      },
-      error: (err) => {
-        console.error('Error getting total time:', err);
+        //console.error('API Error:', err, err.error);
+        alert(err.error?.message || 'Failed to time out.');
       }
     });
   }
-  
 
   isTimeIn() {
     this.timeInOutService.isTimeIn(this.Id).subscribe((res) => {
