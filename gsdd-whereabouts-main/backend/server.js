@@ -45,6 +45,8 @@ app.use(express.json());
 
 // app.use(history());
 
+let currentRule = { time: '7:00 AM-5:00 PM' };
+
 // WebSocket setup
 wss.on("error", console.error);
 wss.on("connection", function connection(ws) {
@@ -148,6 +150,27 @@ app.post('/allowed-time', (req, res) => {
   }
   res.json({ success: true, message: 'Time rule configured successfully' });
 });
+
+app.post('/employee-timein', (req, res) => {
+  const currentTime = new Date();
+  const [startTime, endTime] = currentRule.time
+    .split('-')
+    .map(t => new Date(`1970-01-01T${convertTo24Hour(t.trim())}`));
+
+  if (currentTime >= startTime && currentTime <= endTime) {
+    res.status(200).send({ success: true, message: 'Time-in successful' });
+  } else {
+    res.status(400).send({ success: false, message: `Time-in allowed only between ${currentRule.time}` });
+  }
+});
+
+function convertTo24Hour(timeStr) {
+  const [time, modifier] = timeStr.split(' ');
+  let [hours, minutes] = time.split(':').map(Number);
+  if (modifier === 'PM' && hours !== 12) hours += 12;
+  if (modifier === 'AM' && hours === 12) hours = 0;
+  return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+}
 
 // Static file serving
 app.use("/", express.static(path.join(__dirname, "dist/gsdd-whereabouts")));
