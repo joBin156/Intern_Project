@@ -34,8 +34,8 @@ export class AdminComponent implements OnInit {
   }
 
   fetchWeeklyAttendance() {
-    this.employeeAttendanceService.getEmployeeAttendanceData().subscribe((data) => {
-      const weeklyTotals = this.calculateWeeklyTotals(data);
+    this.employeeAttendanceService.().subscribe((User_Id) => {
+      const weeklyTotals = this.calculateWeeklyTotals(User_Id);
 
       this.basicData = {
         labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],

@@ -64,7 +64,7 @@ export class MonthlyAttendanceComponent implements OnInit {
 
        
         
-        this.employeeAttendanceService.getEmployeeAttendanceData().subscribe((data) => {
+        this.employeeAttendanceService.getEmployeeAttendanceData('User_Id').subscribe((data) => {
             this.loading = false;
             this.employeeAttendance = data.map((data: any) => {
                 if(data.time_in != null){

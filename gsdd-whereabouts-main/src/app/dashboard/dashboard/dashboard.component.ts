@@ -100,7 +100,7 @@ export class DashboardComponent implements OnInit {
 
   // Set chart data
   setChartData() {
-    this.employeeAttendanceService.getEmployeeAttendanceData().subscribe((id) => {
+    this.employeeAttendanceService.getEmployeeAttendanceData(this.userId).subscribe((id) => {
       const stats = this.getWeeklyAttendanceStats(id);
   
       this.basicData = {

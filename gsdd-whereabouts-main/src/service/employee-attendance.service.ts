@@ -195,7 +195,7 @@ export class EmployeeAttendanceService {
     //         },
     //     ];
     // }
-    getEmployeeAttendanceData(): Observable<any> {
+    getEmployeeAttendanceData(user_Id: string): Observable<any> {
         return this.http.get<any>(`${this.baseUrlAPI}get_all_data_time_in_out`)
     }
 
@@ -203,8 +203,8 @@ export class EmployeeAttendanceService {
     //     return Promise.resolve(this.getEmployeeAttendanceData().slice(0, 5));
     // }
 
-    getEmployeeAttendance() {
-        return Promise.resolve(this.getEmployeeAttendanceData());
+    getEmployeeAttendance(user_Id: string) {
+        return Promise.resolve(this.getEmployeeAttendanceData(user_Id));
     }
 
     updateRules(rules: { selectedTimeRule: string; selectedPauseTracking: boolean }): Observable<any> {
