@@ -117,6 +117,7 @@ app.use("/", status_value_route);
 
 app.use('/', express.static(path.join(__dirname, 'dist/gsdd-whereabouts')));
 
+//added
 app.get("/admin_rules", (req, res) => {
   const data = {
       selectedTimeRule: "7:00 AM-6:00 PM",

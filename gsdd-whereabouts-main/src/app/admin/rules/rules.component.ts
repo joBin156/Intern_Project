@@ -30,7 +30,7 @@ export class RulesComponent implements OnInit {
     private http: HttpClient
   ) {}
 
-  
+  //added
   updateCurrentTime() {
     const now = new Date();
     this.currentTime = formatDate(now, 'HH:mm:ss', 'en-US');
@@ -55,7 +55,8 @@ export class RulesComponent implements OnInit {
       { time: '8:00 AM-5:00 PM' },
       { time: '5:00 pM-6:00 PM' },
     ];
-
+    
+    //added
     this.http.get('http://localhost:80/allowed-time').subscribe({
       next: (response: any) => {
         if (response && response.time && response.pauseTracking !== undefined) {
@@ -78,7 +79,7 @@ export class RulesComponent implements OnInit {
     const payload = {
       time: this.selectedTimeRule?.time,
       pauseTracking: this.selectedPauseTracking?.value,
-    };
+    };//added
     this.http.post('http://localhost:80/allowed-time', payload).subscribe({
       next: (response: any) => {
         console.log('Success:', response);
