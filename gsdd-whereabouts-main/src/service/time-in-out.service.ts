@@ -41,7 +41,7 @@ export class TimeInOutService {
 
   setAllowedTime(allowedTime: string): Observable<any> {
     const payload = { allowed_time: allowedTime };
-    return this.http.post('http://localhost:80/allowed-time', payload);
+    return this.http.post('allowed-time', payload);
   }
   
 
