@@ -402,7 +402,7 @@ app.put("/update_data/:id", async (req, res) => {
        return res.json(timeRules);
      }
      
-     res.status(404).json({ message: "No time rules found" });
+     return res.json({ time: '8:00 AM-5:00 PM', pauseTracking: true });
    } catch (err) {
      console.error('Error fetching time rules:', err);
      res.status(500).json({ error: "Failed to fetch time rules" });

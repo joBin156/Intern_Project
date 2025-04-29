@@ -4,6 +4,7 @@ import { Router } from '@angular/router'; // If you need navigation
 import { Time } from 'src/domain/admin-rules';
 import { EmployeeAttendanceService } from 'src/service/employee-attendance.service';
 import { HttpClient } from '@angular/common/http'; //added
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-rules',
@@ -48,19 +49,21 @@ export class RulesComponent implements OnInit {
   }
 
   loadSavedRules() {
-    this.http.get('http://localhost:80/allowed-time').subscribe({
+    this.http.get(`${environment.apiUrl}api/allowed-time`).subscribe({
       next: (response: any) => {
         if (response && response.time && response.pauseTracking !== undefined) {
           this.selectedTimeRule = this.timeRule.find(
             (rule) => rule.time === response.time
-          )!;
+          ) || this.timeRule[0];
           this.selectedPauseTracking = this.pauseTracking.find(
             (track) => track.value === response.pauseTracking
-          )!;
+          ) || this.pauseTracking[0];
         }
       },
       error: (err) => {
-        console.error('Failed to fetch saved data:', err);
+        // Set defaults on error
+        this.selectedTimeRule = this.timeRule[0];
+        this.selectedPauseTracking = this.pauseTracking[0];
       },
     });
 
