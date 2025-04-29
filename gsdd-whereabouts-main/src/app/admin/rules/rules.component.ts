@@ -34,19 +34,7 @@ export class RulesComponent implements OnInit {
   updateCurrentTime() {
     const now = new Date();
     this.currentTime = formatDate(now, 'HH:mm:ss', 'en-US');
-    setTimeout(() => this.updateCurrentTime(), 1000); // Update time every second
-  }
-  
-  toggleTime() {
-    if (this.isTimedIn) {
-      this.timeOut = this.currentTime; // Set the time-out when the user "times out"
-      this.isTimedIn = false;  // Mark the user as "timed out"
-      console.log('Timed out at:', this.timeOut);
-    } else {
-      this.timeIn = this.currentTime; // Set the time-in when the user "times in"
-      this.isTimedIn = true;  // Mark the user as "timed in"
-      console.log('Timed in at:', this.timeIn);
-    }
+    setTimeout(() => this.updateCurrentTime(), 1000);
   }
 
   ngOnInit() {
@@ -56,7 +44,10 @@ export class RulesComponent implements OnInit {
       { time: '5:00 pM-6:00 PM' },
     ];
     
-    //added
+    this.loadSavedRules();
+  }
+
+  loadSavedRules() {
     this.http.get('http://localhost:80/allowed-time').subscribe({
       next: (response: any) => {
         if (response && response.time && response.pauseTracking !== undefined) {
@@ -76,14 +67,16 @@ export class RulesComponent implements OnInit {
   }
 
   confirm(): void {
-    const payload = {
-      time: this.selectedTimeRule?.time,
-      pauseTracking: this.selectedPauseTracking?.value,
-    };//added
-    this.http.post('http://localhost:80/allowed-time', payload).subscribe({
+    if (!this.selectedTimeRule?.time || this.selectedPauseTracking?.value === undefined) {
+      alert('Please select both time rule and pause tracking option');
+      return;
+    }
+    
+    this.attendanceService.setAllowedTime(this.selectedTimeRule.time, this.selectedPauseTracking.value).subscribe({
       next: (response: any) => {
         console.log('Success:', response);
         alert(response.message || 'Time rule configured successfully');
+        this.loadSavedRules();
       },
       error: (err) => {
         console.error('API error details:', err);

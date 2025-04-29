@@ -32,6 +32,10 @@ const TimeInAndOut = sequelize.define(
       type: Sequelize.STRING,
       allowNull: true,
     },
+    allowedTimeRules: {
+      type: Sequelize.TEXT,
+      allowNull: true
+    }
   },
   { timestamps: true },
 );

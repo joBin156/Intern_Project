@@ -12,7 +12,7 @@ const WebSocket = require('ws');
 const path = require('path');
 
 const app = express();
-const port = process.env.PORT || 80;
+const port = process.env.PORT || 5000;
 const server = http.createServer(app);
 const moment = require('moment');
 
@@ -175,6 +175,6 @@ app.get("*", (req, res) => {
 });
 
 // Server startup
-server.listen(port, () => {
-  console.log(`Server running on http://localhost:${port}`);
+server.listen(5000, '0.0.0.0', () => {
+  console.log(`Server running on http://0.0.0.0:5000`);
 });

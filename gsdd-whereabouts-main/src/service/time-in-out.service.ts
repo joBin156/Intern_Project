@@ -2,20 +2,38 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { catchError } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
+import { TabService } from './tab.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TimeInOutService {
-  private apiUrl = "http://localhost:80/";
+  private apiUrl = "http://0.0.0.0:5000/";
 
   constructor(private http: HttpClient) {}
 
   timeIn(user_Id: string, time_in: Date): Observable<any> {
-    return this.http.post(`${this.apiUrl}time_in`, { user_Id, time_in }).pipe(
+    const payload = {
+      user_Id: user_Id,
+      time_in: time_in
+    };
+    
+    return this.http.post(`${this.apiUrl}time_in`, payload).pipe(
+      tap((response: any) => {
+        if (response.success) {
+          // Cache the response locally with the record ID
+          localStorage.setItem('lastTimeIn', JSON.stringify({
+            user_Id,
+            time_in,
+            record_id: response.data.Id,
+            timestamp: new Date().getTime()
+          }));
+        }
+      }),
       catchError((error) => {
         console.error('Error during timeIn:', error);
+        localStorage.removeItem('lastTimeIn');
         return throwError(() => error);
       })
     );
@@ -39,12 +57,11 @@ export class TimeInOutService {
     });
   }
 
-  setAllowedTime(allowedTime: string): Observable<any> {
-    const payload = { allowed_time: allowedTime };
-    return this.http.post('allowed-time', payload);
+  setAllowedTime(time: string, pauseTracking: boolean): Observable<any> {
+    const payload = { time, pauseTracking };
+    return this.http.post(`${this.apiUrl}allowed-time`, payload);
   }
   
-
   isTimeIn(user_Id: string | null): Observable<any> {
     return this.http.get(`${this.apiUrl}check_time_in_today/${user_Id}`);
   }

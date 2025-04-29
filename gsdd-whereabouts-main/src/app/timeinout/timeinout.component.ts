@@ -117,47 +117,54 @@ export class TimeinoutComponent implements OnInit {
 
   /** Clock the user in */
   timeIn(): void {
+    if (!this.Id) {
+      alert('User ID not found');
+      return;
+    }
+    
+    const currentTime = new Date();
     const payload = {
-      userId: this.Id,           // make sure this matches your backend’s field
-      timeIn: this.timeDisplay,  // e.g. “08:30:00”
+      user_Id: this.Id,
+      time_in: currentTime
     };
 
-    console.log('Time-in payload:', payload);
-
-    this.http.post('http://localhost:80/employee-timein', payload).subscribe({
+    this.timeInOutService.timeIn(this.Id, currentTime).subscribe({
       next: (response: any) => {
         console.log('Time-in successful:', response);
-        alert(response.message || 'Time-in successful');
-        this.setTimeIn(this.timeDisplay);
-        this.check_time_out = false;
+        if (response.success) {
+          this.setTimeIn(this.timeDisplay);
+          this.timeOutID = response.data.Id;
+          this.check_time_out = false;
+        } else {
+          alert(response.message || 'Already timed in');
+        }
       },
       error: (err) => {
-        console.error('API Error:', err, err.error);
-        alert(err.error?.message || 'Failed to time in.');
+        console.error('API Error:', err);
+        alert(err.error?.message || 'Failed to time in');
       }
     });
   }
 
   /** Clock the user out */
   timeOut(): void {
-    const payload = {
-      userId: this.Id,
-      timeOut: this.timeDisplay,
-    };
+    if (!this.timeOutID) {
+      alert('No active time-in record found');
+      return;
+    }
 
-    console.log('Time-out payload:', payload);
-
-    this.http.post('http://localhost:80/employee-timeout', payload).subscribe({
+    const currentTime = new Date();
+    
+    this.timeInOutService.timeOut(this.timeOutID, currentTime).subscribe({
       next: (response: any) => {
         console.log('Time-out successful:', response);
-        alert(response.message || 'Time-out successful');
         this.setTimeOut(this.timeDisplay);
         this.check_time_out = true;
-        // then fetch & update total time as before...
+        alert(response.message || 'Time-out successful');
       },
       error: (err) => {
-        //console.error('API Error:', err, err.error);
-        alert(err.error?.message || 'Failed to time out.');
+        console.error('API Error:', err);
+        alert(err.error?.message || 'Failed to time out');
       }
     });
   }
@@ -166,20 +173,29 @@ export class TimeinoutComponent implements OnInit {
     this.timeInOutService.isTimeIn(this.Id).subscribe((res) => {
       if (res.dataOfTimeIn) {
         this.setTimeIn(res.dataOfTimeIn);
-        this.timeOutId = res.Id;
+        this.timeOutID = res.Id;
       } else {
         console.log('No time in');
+        this.timeOutID = ''; 
       }
     });
   }
 
   isTimeOut() {
-    this.timeInOutService.isTimeOut(this.Id).subscribe((res) => {
-      if (res.dataOfTimeOut) {
-        this.setTimeOut(res.dataOfTimeOut);
-        this.check_time_out = true;
-      } else {
-        console.log('No time out');
+    this.timeInOutService.isTimeOut(this.Id).subscribe({
+      next: (res) => {
+        if (res.dataOfTimeOut) {
+          this.setTimeOut(res.dataOfTimeOut);
+          this.check_time_out = true;
+        } else {
+          this.setTimeOut('--');
+          this.check_time_out = false;
+          console.log('No time out');
+        }
+      },
+      error: (err) => {
+        console.error('Error checking time out status:', err);
+        this.check_time_out = false;
       }
     });
   }

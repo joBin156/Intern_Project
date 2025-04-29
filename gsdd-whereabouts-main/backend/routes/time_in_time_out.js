@@ -2,6 +2,7 @@ const express = require("express");
 const TimeInAndOut = require("../model/time_in_out.model");
 const { QueryTypes} = require("sequelize");
 const sequelize = require("../server");
+const Op = require('sequelize').Op;
 
 const app = express();
 
@@ -13,12 +14,45 @@ app.post("/time_in", async (req, res) => {
   }
 
   try {
+     // Check for existing time-in today
+     const today = new Date();
+     today.setHours(0,0,0,0);
+ 
+     const existingTimeIn = await TimeInAndOut.findOne({
+       where: {
+         user_Id,
+         time_in: {
+           [Op.gte]: today
+         }
+       },
+       order: [['createdAt', 'DESC']]
+     });
+    //return res.status(201).json(timeIn);
+
+    if (existingTimeIn && !existingTimeIn.time_out) {
+      return res.status(200).json({
+        success: true,
+        data: existingTimeIn,
+        message: "Already timed in"
+      });
+    }
+
     const timeIn = await TimeInAndOut.create({
       user_Id,
       time_in: time_in,
     });
 
-    return res.status(201).json(timeIn);
+        // Store in session
+     if (req.session) {
+        req.session.currentTimeIn = timeIn.id;
+      }
+
+    return res.status(201).json({
+      success: true,
+      data: timeIn,
+      message: "Time-in recorded successfully"
+    });
+
   } catch (err) {
     console.error(err);
     return res
@@ -319,11 +353,66 @@ app.put("/update_data/:id", async (req, res) => {
         return res.status(500).json({ error: "An error occurred." });
     }
  })
+ //added
+ let timeRules = {};
+
+ app.post('/allowed-time', async (req, res) => {
+   const { time, pauseTracking } = req.body;
+   
+   try {
+     // Store in database
+     await TimeInAndOut.update(
+       { allowedTimeRules: JSON.stringify({ time, pauseTracking }) },
+       { where: { id: 1 }, // Global settings record
+         upsert: true 
+       }
+     );
+     
+     // Cache in memory
+     timeRules = { time, pauseTracking };
+     
+     res.status(200).json({ 
+       success: true,
+       message: "Time rules saved successfully",
+       rules: timeRules
+     });
+   } catch (err) {
+     console.error('Error saving time rules:', err);
+     res.status(500).json({ error: "Failed to save time rules" });
+   }
+ });
+ 
+ app.get('/allowed-time', async (req, res) => {
+   try {
+     // Try memory cache first
+     if (Object.keys(timeRules).length > 0) {
+       return res.json(timeRules);
+     }
+     
+     // Fallback to database
+     const settings = await TimeInAndOut.findOne({
+       where: { id: 1 }
+     });
+     
+     if (settings?.allowedTimeRules) {
+       timeRules = JSON.parse(settings.allowedTimeRules);
+       return res.json(timeRules);
+     }
+     
+     res.status(404).json({ message: "No time rules found" });
+   } catch (err) {
+     console.error('Error fetching time rules:', err);
+     res.status(500).json({ error: "Failed to fetch time rules" });
+   }
+ });
+
+ module.exports = router;
 
 function convertToHHMM(time) {
   const hours = Math.floor(time);
   const minutes = Math.floor((time - hours) * 60);
 
-  return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;//change
+  //return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;//change
+  return `${hours.toString().padStart(2, "0")}:${minutes.toString().padStart(2, "0")}`;
 }
 module.exports = app;
