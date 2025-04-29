@@ -12,23 +12,24 @@ const WebSocket = require('ws');
 const path = require('path');
 
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 80;
 const server = http.createServer(app);
 const moment = require('moment');
 
 const wss = new WebSocket.Server({server});
 
-wss.on('error', console.error);
+const timeInOutRoutes = require('./routes/time_in_time_out');
 
-wss.on('connection', function connection(ws){
-    console.log("A new client connected");
-    ws.send("WS SEND Welcome new client!");
+app.use(express.json());
+app.use('/api', timeInOutRoutes);
 
-    ws.on('message', function message(status) {
-        console.log('received: %s', status);
-        ws.send("Got your message its from WS: " + message)
-    });
-})
+// Enable CORS
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  next();
+});
 
 const allowedOrigin = ["http://localhost:80", "http://localhost:4200"];
 
@@ -175,6 +176,6 @@ app.get("*", (req, res) => {
 });
 
 // Server startup
-server.listen(5000, '0.0.0.0', () => {
-  console.log(`Server running on http://0.0.0.0:5000`);
+server.listen(80, 'localhost:', () => {
+  console.log(`Server running on http://localhost:80/`);
 });

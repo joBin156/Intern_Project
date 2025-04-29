@@ -356,7 +356,10 @@ app.put("/update_data/:id", async (req, res) => {
  //added
  let timeRules = {};
 
- app.post('/allowed-time', async (req, res) => {
+ const express = require('express');
+ const router = express.Router();
+ 
+ router.post('/allowed-time', async (req, res) => {
    const { time, pauseTracking } = req.body;
    
    try {

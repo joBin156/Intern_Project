@@ -208,16 +208,16 @@ export class EmployeeAttendanceService {
     }
 
     updateRules(rules: { selectedTimeRule: string; selectedPauseTracking: boolean }): Observable<any> {
-      const url = `${this.baseUrlAPI}/admin_rules`;
+      const url = `${this.baseUrl}/admin_rules`;
       return this.http.post(url, rules);
       }
 
     setAllowedTime(time: string, pauseTracking: boolean): Observable<any> {
-      return this.http.post(`${this.baseUrlAPI}allowed-time`, { time, pauseTracking });
+      return this.http.post(`${this.baseUrl}api/allowed-time`, { time, pauseTracking });
     }
 
     markAbsent(employeeId: string, date: string): Observable<any> {
-      const url = `${this.baseUrlAPI}attendance/mark-absent`; // Replace with actual endpoint
+      const url = `${this.baseUrl}attendance/mark-absent`; // Replace with actual endpoint
       return this.http.post(url, { employeeId, date });
     }
 }
