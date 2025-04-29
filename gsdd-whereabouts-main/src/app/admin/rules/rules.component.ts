@@ -75,7 +75,10 @@ export class RulesComponent implements OnInit {
       return;
     }
     
-    this.attendanceService.setAllowedTime(this.selectedTimeRule.time, this.selectedPauseTracking.value).subscribe({
+    this.attendanceService.setAllowedTime(
+      this.selectedTimeRule.time, 
+      this.selectedPauseTracking.value
+    ).subscribe({
       next: (response: any) => {
         console.log('Success:', response);
         alert(response.message || 'Time rule configured successfully');
