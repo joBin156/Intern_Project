@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { from } from 'rxjs';
 import { EmployeeAttendanceService } from 'src/service/employee-attendance.service';
 
 @Component({
@@ -34,7 +35,7 @@ export class AdminComponent implements OnInit {
   }
 
   fetchWeeklyAttendance() {
-    this.employeeAttendanceService.getEmployeeAttendance().subscribe((data: EmployeeAttendanceService[]) => {
+    from(this.employeeAttendanceService.getEmployeeAttendance('user_Id')).subscribe((data: any) => {
       const weeklyTotals = this.calculateWeeklyTotals(data);
 
       this.basicData = {
