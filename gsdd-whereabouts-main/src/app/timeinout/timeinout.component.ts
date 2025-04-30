@@ -123,25 +123,23 @@ export class TimeinoutComponent implements OnInit {
     }
     
     const currentTime = new Date();
-    const payload = {
-      user_Id: this.Id,
-      time_in: currentTime
-    };
 
     this.timeInOutService.timeIn(this.Id, currentTime).subscribe({
       next: (response: any) => {
         console.log('Time-in successful:', response);
-        if (response.success) {
+        if (response && response.success) {
           this.setTimeIn(this.timeDisplay);
-          this.timeOutID = response.data.Id;
+          this.timeOutID = response.data?.Id;
           this.check_time_out = false;
+          alert('Time-in successful');
         } else {
-          alert(response.message || 'Already timed in');
+          console.error('Invalid response:', response);
+          alert(response?.message || 'Already timed in');
         }
       },
       error: (err) => {
         console.error('API Error:', err);
-        alert(err.error?.message || 'Failed to time in');
+        alert(err.error?.message || 'Failed to time in. Please check your connection and try again.');
       }
     });
   }

@@ -10,17 +10,15 @@ const cookieParser = require("cookie-parser");
 const http = require('http');
 const WebSocket = require('ws');
 const path = require('path');
-
+const moment = require('moment');
 const app = express();
 const port = process.env.PORT || 80;
 const server = http.createServer(app);
-const moment = require('moment');
 
 const wss = new WebSocket.Server({server});
 
 const timeInOutRoutes = require('./routes/time_in_time_out');
 
-app.use(express.json());
 app.use('/api', timeInOutRoutes);
 
 // Enable CORS
@@ -176,6 +174,6 @@ app.get("*", (req, res) => {
 });
 
 // Server startup
-server.listen(80, 'localhost:', () => {
+server.listen(80, 'localhost', () => {
   console.log(`Server running on http://localhost:80/`);
 });

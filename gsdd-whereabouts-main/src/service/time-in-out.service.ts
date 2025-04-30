@@ -10,7 +10,7 @@ import { TabService } from './tab.service';
 })
 export class TimeInOutService {
   private baseUrl = environment.apiUrl;
-  private apiUrl = "http:/http:localhost:80";
+  private apiUrl = "http://localhost:80/";
 
   constructor(private http: HttpClient) {}
 
@@ -20,7 +20,7 @@ export class TimeInOutService {
       time_in: time_in
     };
     
-    return this.http.post(`${this.apiUrl}time_in`, payload).pipe(
+    return this.http.post(`${this.apiUrl}/time_in`, payload).pipe(
       tap((response: any) => {
         if (response.success) {
           // Cache the response locally with the record ID
@@ -41,7 +41,7 @@ export class TimeInOutService {
   }
 
   timeOut(time_out_Id: string, time_out: Date): Observable<any> {
-    return this.http.put(`${this.apiUrl}time_out/${time_out_Id}`, {
+    return this.http.put(`${this.apiUrl}/time_out/${time_out_Id}`, {
       time_out,
     });
   }
@@ -49,11 +49,11 @@ export class TimeInOutService {
   getTotalTimeForToday(user_Id: string): Observable<any> {
     //return this.http.get(`${this.baseUrlAPI}total_time/${time_out_Id}`);
     console.log(user_Id)
-    return this.http.get(`${this.apiUrl}total_time/${user_Id}`);//updated
+    return this.http.get(`${this.apiUrl}/total_time/${user_Id}`);//updated
   }
 
   setTotalTime(time_out_Id: string, total_time: string): Observable<any> {
-    return this.http.put(`${this.apiUrl}set_total_time/${time_out_Id}`, {
+    return this.http.put(`${this.apiUrl}/set_total_time/${time_out_Id}`, {
       total_time,
     });
   }
@@ -64,11 +64,11 @@ export class TimeInOutService {
   }
   
   isTimeIn(user_Id: string | null): Observable<any> {
-    return this.http.get(`${this.baseUrl}check_time_in_today/${user_Id}`);
+    return this.http.get(`${this.baseUrl}/check_time_in_today/${user_Id}`);
   }
 
   isTimeOut(user_Id: string | null): Observable<any> {
-    return this.http.get(`${this.baseUrl}check_time_out_today/${user_Id}`);
+    return this.http.get(`${this.baseUrl}/check_time_out_today/${user_Id}`);
   }
 
   getTimeInAndOut(user_Id: string | null): Observable<any>{
@@ -76,14 +76,14 @@ export class TimeInOutService {
   }
 
   updateData(Id: string | null, time_in: Date, time_out: Date): Observable<any>{
-    return this.http.put(`${this.baseUrl}update_Data/${Id}`, {time_in ,time_out})
+    return this.http.put(`${this.baseUrl}/update_Data/${Id}`, {time_in ,time_out})
   }
   
   getAllLatestTimeInToday(): Observable<any>{
-    return this.http.get(`${this.baseUrl}all_latest_time_in`);
+    return this.http.get(`${this.baseUrl}/all_latest_time_in`);
   }
 
   getAllDataTimeInOut(): Observable<any>{
-    return this.http.get(`${this.baseUrl}get_all_data_time_in_out`);
+    return this.http.get(`${this.baseUrl}/get_all_data_time_in_out`);
   }
 }
