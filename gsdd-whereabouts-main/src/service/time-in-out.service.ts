@@ -9,7 +9,8 @@ import { TabService } from './tab.service';
   providedIn: 'root',
 })
 export class TimeInOutService {
-  private apiUrl = "http://0.0.0.0:5000/";
+  private baseUrl = environment.apiUrl;
+  private apiUrl = "http:/http:localhost:80";
 
   constructor(private http: HttpClient) {}
 
@@ -59,30 +60,30 @@ export class TimeInOutService {
 
   setAllowedTime(time: string, pauseTracking: boolean): Observable<any> {
     const payload = { time, pauseTracking };
-    return this.http.post(`${this.apiUrl}allowed-time`, payload);
+    return this.http.post(`${this.baseUrl}allowed-time`, payload);
   }
   
   isTimeIn(user_Id: string | null): Observable<any> {
-    return this.http.get(`${this.apiUrl}check_time_in_today/${user_Id}`);
+    return this.http.get(`${this.baseUrl}check_time_in_today/${user_Id}`);
   }
 
   isTimeOut(user_Id: string | null): Observable<any> {
-    return this.http.get(`${this.apiUrl}check_time_out_today/${user_Id}`);
+    return this.http.get(`${this.baseUrl}check_time_out_today/${user_Id}`);
   }
 
   getTimeInAndOut(user_Id: string | null): Observable<any>{
-    return this.http.get(`${this.apiUrl}get_time_in_and_out/${user_Id}`);
+    return this.http.get(`${this.baseUrl}get_time_in_and_out/${user_Id}`);
   }
 
   updateData(Id: string | null, time_in: Date, time_out: Date): Observable<any>{
-    return this.http.put(`${this.apiUrl}update_Data/${Id}`, {time_in ,time_out})
+    return this.http.put(`${this.baseUrl}update_Data/${Id}`, {time_in ,time_out})
   }
   
   getAllLatestTimeInToday(): Observable<any>{
-    return this.http.get(`${this.apiUrl}all_latest_time_in`);
+    return this.http.get(`${this.baseUrl}all_latest_time_in`);
   }
 
   getAllDataTimeInOut(): Observable<any>{
-    return this.http.get(`${this.apiUrl}get_all_data_time_in_out`);
+    return this.http.get(`${this.baseUrl}get_all_data_time_in_out`);
   }
 }

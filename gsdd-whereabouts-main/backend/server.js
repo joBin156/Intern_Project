@@ -47,7 +47,7 @@ app.use(express.json());
 
 // app.use(history());
 
-let currentRule = { time: '7:00 AM-5:00 PM' };
+let currentRule = { time: '7:00 AM-4:00 PM' };
 
 // WebSocket setup
 wss.on("error", console.error);
@@ -121,7 +121,7 @@ app.use('/', express.static(path.join(__dirname, 'dist/gsdd-whereabouts')));
 //added
 app.get("/admin_rules", (req, res) => {
   const data = {
-      selectedTimeRule: "7:00 AM-6:00 PM",
+      selectedTimeRule: "7:00 AM-4:00 PM",
       selectedPauseTracking: true,
   };
   res.status(200).json(data);
@@ -142,7 +142,7 @@ app.post("/admin_rules", (req, res) => {
 });
 
 app.get('/allowed-time', (req, res) => {
-  res.json({ time: '7:00 AM-6:00 PM' });
+  res.json({ time: '7:00 AM-4:00 PM' });
 });
 
 app.post('/allowed-time', (req, res) => {
